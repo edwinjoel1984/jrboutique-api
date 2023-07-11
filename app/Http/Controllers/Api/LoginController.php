@@ -11,6 +11,9 @@ use App\Models\User;
 class LoginController extends Controller
 {
     public function login(Request $request){
+        return response()->json([
+            'message'=>'Todo bien por aca'
+        ], 200);
         
         $this->validateLogin($request);
 
