@@ -13,11 +13,11 @@
         <!-- Styles -->
         <style>
             body{
-                background: url({{asset('assets/images/610x800.png'); }}) right top no-repeat;
+                background: url("{{asset('assets/images/610x800.png'); }}") right top no-repeat;
             }
             @media (min-width: 1440px) {
                 body {
-                    background: url({{asset('assets/images/logo-jr.png')}}) right top no-repeat;
+                    background: url("{{asset('assets/images/logo-jr.png')}}") right top no-repeat;
                 }
             }
         </style>

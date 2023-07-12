@@ -11,29 +11,30 @@ use App\Models\User;
 class LoginController extends Controller
 {
     public function login(Request $request){
-        return response()->json([
-            'message'=>'Todo bien por aca'
-        ], 200);
+      
         
         $this->validateLogin($request);
 
         if(Auth::attempt($request->only('email', 'password'))){
+            $user = $request->user();
+            $token =  $user->createToken($request->email)->plainTextToken;
             return response()->json([
-                'token'=>$request->user()->createToken($request->name)->plainTextToken,
+                'token'=>$token,
+                'email'=>$user->email,
+                'name'=>$user->name,
                 'message'=>'Success'
             ]);
         }
 
         return response()->json([
-            'message'=>'Unathenticated'
+            'message'=>'Correo o Contrasena Invalida'
         ], 401);
     }
 
     public function validateLogin(Request $request){
         return $request->validate([
             'email'=>'required|email',
-            'password'=>'required',
-            'name'=>'required'
+            'password'=>'required'
         ]);
     }
 
