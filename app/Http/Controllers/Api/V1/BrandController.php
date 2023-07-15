@@ -27,22 +27,18 @@ class BrandController extends Controller
     public function store(Request $request)
     {
         $input = $request->all();
-        var_dump($input);
-        return $this->sendResponse($input, 'Brand created successfully.');
-        // return $input;
-        // $validator = Validator::make($input, [
-        //     'name' => 'required',
-        //     'description' => 'required'
-        // ]);
+        $validator = Validator::make($input, [
+            'name' => 'required',
+            'description' => 'required'
+        ]);
 
-        // if($validator->fails()){
-        //     return $this->sendError('Validation Error.', $validator->errors());       
-        // }
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());       
+        }
    
-        // $brand = Brand::create($input);
+        $brand = Brand::create($input);
    
-        // return $this->sendResponse(new ProductResource($brand), 'Brand created successfully.');
-
+        return $this->sendResponse(new BrandResource($brand), 'Brand created successfully.');
     }
 
     /**
@@ -65,17 +61,35 @@ class BrandController extends Controller
      */
     public function update(Request $request, Brand $brand)
     {
-        //
+        $input = $request->all();
+   
+        $validator = Validator::make($input, [
+            'name' => 'required',
+            'description' => 'required'
+        ]);
+   
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());       
+        }
+   
+        $brand->name = $input['name'];
+        $brand->description = $input['description'];
+        $brand->save();
+   
+        return $this->sendResponse(new BrandResource($brand), 'Brand updated successfully.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Brand $brand)
-    {
-        if($brand->delete()){
-            return response()->json(['message'=>'Success'], 204);
+    public function destroy($id)
+    {   
+        $brand = Brand::find($id);
+  
+        if (is_null($brand)) {
+            return $this->sendError('Brand not found.');
         }
-        return response()->json(['message'=>'Not found'], 404);
+        $brand->delete();
+        return $this->sendResponse([], 'Brand deleted successfully.');
     }
 }
