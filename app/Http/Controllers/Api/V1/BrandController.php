@@ -11,14 +11,14 @@ use App\Http\Resources\V1\BrandResource;
 
 class BrandController extends Controller
 {
-     /**
+    /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $brands = Brand::all();
         return $this->sendResponse(BrandResource::collection($brands), 'Brands retrieved successfully.');
-    //   return BrandResource::collection(Brand::latest()->paginate());
+        //   return BrandResource::collection(Brand::latest()->paginate());
     }
 
     /**
@@ -32,12 +32,12 @@ class BrandController extends Controller
             'description' => 'required'
         ]);
 
-        if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors());       
+        if ($validator->fails()) {
+            return $this->sendError('Validation Error.', $validator->errors());
         }
-   
+
         $brand = Brand::create($input);
-   
+
         return $this->sendResponse(new BrandResource($brand), 'Brand created successfully.');
     }
 
@@ -45,13 +45,13 @@ class BrandController extends Controller
      * Display the specified resource.
      */
     public function show($id)
-    {        
+    {
         $brand = Brand::find($id);
-  
+
         if (is_null($brand)) {
             return $this->sendError('Brand not found.');
         }
-   
+
         return $this->sendResponse(new BrandResource($brand), 'Brand retrieved successfully.');
         // return new BrandResource($brand);
     }
@@ -62,20 +62,20 @@ class BrandController extends Controller
     public function update(Request $request, Brand $brand)
     {
         $input = $request->all();
-   
+
         $validator = Validator::make($input, [
             'name' => 'required',
             'description' => 'required'
         ]);
-   
-        if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors());       
+
+        if ($validator->fails()) {
+            return $this->sendError('Validation Error.', $validator->errors());
         }
-   
+
         $brand->name = $input['name'];
         $brand->description = $input['description'];
         $brand->save();
-   
+
         return $this->sendResponse(new BrandResource($brand), 'Brand updated successfully.');
     }
 
@@ -83,9 +83,9 @@ class BrandController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy($id)
-    {   
+    {
         $brand = Brand::find($id);
-  
+
         if (is_null($brand)) {
             return $this->sendError('Brand not found.');
         }
