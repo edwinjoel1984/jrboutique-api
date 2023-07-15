@@ -15,7 +15,10 @@ class ProviderController extends Controller
      */
     public function index()
     {
-        return ProviderResource::collection(Provider::latest()->paginate());
+        $providers = Provider::all();
+        return $this->sendResponse(ProviderResource::collection($providers), 'Providers retrieved successfully.');
+       
+        // return ProviderResource::collection(Provider::latest()->paginate());
     }
 
     /**
