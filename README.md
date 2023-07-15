@@ -8,7 +8,7 @@
 ```
 php artisan make:model ModelName -cmf
 ```
-#### Options
+##### Options
 * c = controller
 * m = model
 * f = factory
