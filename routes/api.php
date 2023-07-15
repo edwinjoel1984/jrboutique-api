@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\V1\ProviderController as ProviderV1;
 use App\Http\Controllers\Api\V1\BrandController as BrandV1;
+use App\Http\Controllers\Api\V1\ArticleController as ArticleV1;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,14 +19,17 @@ use App\Http\Controllers\Api\V1\BrandController as BrandV1;
 */
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+      return $request->user();
 });
 
 Route::apiResource('v1/providers', ProviderV1::class)
-      ->only(['index','show', 'destroy'])
+      ->only(['index', 'show', 'destroy'])
       ->middleware('auth:sanctum');
 
 Route::apiResource('v1/brands', BrandV1::class)
+      ->middleware('auth:sanctum');
+
+Route::apiResource('v1/articles', ArticleV1::class)
       ->middleware('auth:sanctum');
 
 Route::post('login', [App\Http\Controllers\Api\LoginController::class, 'login']);
