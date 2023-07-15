@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Provider;
 use App\Models\Brand;
 use App\Models\Role;
+use App\Models\Size;
 
 class DatabaseSeeder extends Seeder
 {
@@ -34,7 +35,12 @@ class DatabaseSeeder extends Seeder
         foreach ($brandsArray as $brand) {
             Brand::factory()->create($brand);
         }
-       
+
+        $sizes = ["0", "1", "2", "3", "4", "6", "8", "10", "12", "14", "16", "XS", "S", "M", "L", "XL", "Unica"];
+        foreach ($sizes as $size) {
+            Size::factory()->create(["name" => $size]);
+        }
+
 
         // \App\Models\User::factory()->create([
         //     'name' => 'Test User',
