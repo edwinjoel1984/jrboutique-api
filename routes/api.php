@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\ProviderController as ProviderV1;
 use App\Http\Controllers\Api\V1\BrandController as BrandV1;
 use App\Http\Controllers\Api\V1\ArticleController as ArticleV1;
+use App\Http\Controllers\Api\V1\CustomerController as CustomerV1;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,6 +31,9 @@ Route::apiResource('v1/brands', BrandV1::class)
       ->middleware('auth:sanctum');
 
 Route::apiResource('v1/articles', ArticleV1::class)
+      ->middleware('auth:sanctum');
+
+Route::apiResource('v1/customers', CustomerV1::class)
       ->middleware('auth:sanctum');
 
 Route::post('login', [App\Http\Controllers\Api\LoginController::class, 'login']);
