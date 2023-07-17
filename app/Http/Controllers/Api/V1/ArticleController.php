@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Article;
+use App\Models\ArticleSize;
+use Validator;
 use Illuminate\Http\Request;
 
 use App\Http\Resources\V1\ArticleResource;
@@ -27,6 +29,27 @@ class ArticleController extends Controller
     public function store(Request $request)
     {
         //
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'name' => 'required',
+            'ref' => 'required',
+            'barcode' => 'required',
+            'brand_id' => 'required',
+            'size_details' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('Validation Error.', $validator->errors());
+        }
+
+        $article = Article::create($input);
+        $details = [];
+        foreach ($input["size_details"] as $articleSize) {
+            array_push($details, new ArticleSize($articleSize));
+        }
+        $article->stock()->saveMany($details);
+
+        return $this->sendResponse(new ArticleResource($article), 'Article created successfully.');
     }
 
     /**
@@ -42,7 +65,21 @@ class ArticleController extends Controller
      */
     public function update(Request $request, Article $article)
     {
-        //
+        $input = $request->all();
+
+        $validator = Validator::make($input, [
+            'name' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('Validation Error.', $validator->errors());
+        }
+
+        $article->name = $input['name'];
+        $article->brand_id = $input['brand_id'];
+        $article->save();
+
+        return $this->sendResponse(new ArticleResource($article), 'Article updated successfully.');
     }
 
     /**

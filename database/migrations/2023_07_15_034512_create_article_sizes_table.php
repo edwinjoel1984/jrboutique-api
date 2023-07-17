@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->biginteger('article_id')->unsigned();
             $table->biginteger('size_id')->unsigned();
-            $table->decimal('price', 5, 2);
+            $table->decimal('price', 12, 2);
             $table->integer('quantity');
             $table->timestamps();
 

@@ -14,17 +14,17 @@ class ArticleResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $stock = 0;
+        $stockQuantity = 0;
         foreach ($this->stock as $articleSize) {
-            $stock = $stock + $articleSize->quantity;
+            $stockQuantity = $stockQuantity + $articleSize->quantity;
         }
         return [
             'name' => $this->name,
             'ref' => $this->ref,
             'code' => $this->barcode,
             'brand' => $this->brand->name,
-            'stock' => $stock
+            'stock' => $stockQuantity,
+            'detail_stock' => $this->stock
         ];
-        // return parent::toArray($request);
     }
 }
