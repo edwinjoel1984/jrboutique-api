@@ -7,6 +7,8 @@ use App\Http\Controllers\Api\V1\ProviderController as ProviderV1;
 use App\Http\Controllers\Api\V1\BrandController as BrandV1;
 use App\Http\Controllers\Api\V1\ArticleController as ArticleV1;
 use App\Http\Controllers\Api\V1\CustomerController as CustomerV1;
+use App\Http\Controllers\Api\V1\OrderController as OrderV1;
+use App\Http\Controllers\Api\V1\CommitmentController as CommitmentV1;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,5 +37,27 @@ Route::apiResource('v1/articles', ArticleV1::class)
 
 Route::apiResource('v1/customers', CustomerV1::class)
       ->middleware('auth:sanctum');
+
+Route::apiResource('v1/orders', OrderV1::class)
+      ->middleware('auth:sanctum');
+
+Route::get('v1/orders_by_status', [OrderV1::class, 'orders_by_status'])
+      ->middleware('auth:sanctum');
+
+Route::post('v1/orders/{id}/add_product', [OrderV1::class, 'add_product_to_order'])
+      ->middleware('auth:sanctum');
+
+Route::put('v1/orders/{id}/update_detail/{order_detail_id}', [OrderV1::class, 'update_detail'])
+      ->middleware('auth:sanctum');
+
+Route::delete('v1/orders/{id}/remove_product/{order_detail_id}', [OrderV1::class, 'remove_detail_item'])
+      ->middleware('auth:sanctum');
+
+Route::put('v1/orders/{id}/confirm_order', [OrderV1::class, 'confirm_order'])
+      ->middleware('auth:sanctum');
+
+Route::apiResource('v1/commitments', CommitmentV1::class)
+      ->middleware('auth:sanctum');
+
 
 Route::post('login', [App\Http\Controllers\Api\LoginController::class, 'login']);
