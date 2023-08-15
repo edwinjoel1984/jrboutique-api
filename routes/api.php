@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\ArticleController as ArticleV1;
 use App\Http\Controllers\Api\V1\CustomerController as CustomerV1;
 use App\Http\Controllers\Api\V1\OrderController as OrderV1;
 use App\Http\Controllers\Api\V1\CommitmentController as CommitmentV1;
+use App\Http\Controllers\Api\V1\PaymentController as PaymentV1;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,6 +39,12 @@ Route::apiResource('v1/articles', ArticleV1::class)
 Route::apiResource('v1/customers', CustomerV1::class)
       ->middleware('auth:sanctum');
 
+Route::get('v1/customers/{id}/commitments', [CustomerV1::class, 'commitments_by_user'])
+      ->middleware('auth:sanctum');
+
+Route::post('v1/customers/{id}/payments', [CustomerV1::class, 'create_payment'])
+      ->middleware('auth:sanctum');
+
 Route::apiResource('v1/orders', OrderV1::class)
       ->middleware('auth:sanctum');
 
@@ -57,6 +64,10 @@ Route::put('v1/orders/{id}/confirm_order', [OrderV1::class, 'confirm_order'])
       ->middleware('auth:sanctum');
 
 Route::apiResource('v1/commitments', CommitmentV1::class)
+      ->middleware('auth:sanctum');
+
+Route::apiResource('v1/payments', PaymentV1::class)
+      ->only(['index', 'show', 'store'])
       ->middleware('auth:sanctum');
 
 

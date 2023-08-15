@@ -19,4 +19,9 @@ class Customer extends Model
     {
         return $this->first_name . ' ' . $this->last_name;
     }
+
+    public function commitments(): HasMany
+    {
+        return $this->hasMany(Commitment::class);
+    }
 }
