@@ -66,6 +66,9 @@ Route::put('v1/orders/{id}/confirm_order', [OrderV1::class, 'confirm_order'])
 Route::apiResource('v1/commitments', CommitmentV1::class)
       ->middleware('auth:sanctum');
 
+Route::get('v1/commitments_grouped_by_user', [CommitmentV1::class, 'commitments_grouped_by_user'])
+      ->middleware('auth:sanctum');
+
 Route::apiResource('v1/payments', PaymentV1::class)
       ->only(['index', 'show', 'store'])
       ->middleware('auth:sanctum');

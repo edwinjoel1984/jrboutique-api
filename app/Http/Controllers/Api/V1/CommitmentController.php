@@ -6,6 +6,7 @@ use App\Models\Commitment;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\V1\CommitmentResource;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Validator;
 
 
@@ -18,6 +19,20 @@ class CommitmentController extends Controller
     {
         $commitments = Commitment::all();
         return $this->sendResponse(CommitmentResource::collection($commitments), 'Commitments retrieved successfully.');
+    }
+    /**
+     * Display a listing of the resource.
+     */
+    public function commitments_grouped_by_user()
+    {
+        $commitments = DB::table('commitments')
+            ->join('customers', 'commitments.customer_id', '=', 'customers.id')
+            ->select(DB::raw('customers.first_name, customers.last_name, customer_id, sum(pending_amount) as total_pending_amount'))
+            ->groupBy('customer_id')
+            ->orderBy('customer_id')
+            ->havingRaw('sum(pending_amount) > ?', [0])
+            ->get();
+        return $this->sendResponse($commitments, 'Commitments retrieved successfully.');
     }
 
     /**

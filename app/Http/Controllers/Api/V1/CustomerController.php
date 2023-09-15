@@ -112,7 +112,7 @@ class CustomerController extends Controller
                 return $this->sendError('Max Commitment value is $' . $pending_total_amount, [], 422);
             }
 
-            $payment = Payment::create(["date" => $request['date'], "amount" => $request['amount'], "customer_id" => $customer_id]);
+            $payment = Payment::create(["date" => date("Y-m-d"), "amount" => $request['amount'], "payment_method" => $request['paymentMethod'], "customer_id" => $customer_id]);
 
             $balance = $request['amount'];
             $idxCommitment = 0;
