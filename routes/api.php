@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\CustomerController as CustomerV1;
 use App\Http\Controllers\Api\V1\OrderController as OrderV1;
 use App\Http\Controllers\Api\V1\CommitmentController as CommitmentV1;
 use App\Http\Controllers\Api\V1\PaymentController as PaymentV1;
+use App\Http\Controllers\Api\LoginController as LoginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,56 +23,45 @@ use App\Http\Controllers\Api\V1\PaymentController as PaymentV1;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-      return $request->user();
+Route::middleware('auth:sanctum')->group(function () {
+
+      Route::get('/user', function (Request $request) {
+            return $request->user();
+      });
+
+      Route::delete('/sessions', [LoginController::class, 'logout']);
+
+      Route::apiResource('v1/providers', ProviderV1::class)
+            ->only(['index', 'show', 'destroy']);
+
+      Route::apiResource('v1/brands', BrandV1::class);
+
+      Route::apiResource('v1/articles', ArticleV1::class);
+
+      Route::apiResource('v1/customers', CustomerV1::class);
+
+      Route::get('v1/customers/{id}/commitments', [CustomerV1::class, 'commitments_by_user']);
+
+      Route::post('v1/customers/{id}/payments', [CustomerV1::class, 'create_payment']);
+
+      Route::apiResource('v1/orders', OrderV1::class);
+
+      Route::get('v1/orders_by_status', [OrderV1::class, 'orders_by_status']);
+
+      Route::post('v1/orders/{id}/add_product', [OrderV1::class, 'add_product_to_order']);
+
+      Route::put('v1/orders/{id}/update_detail/{order_detail_id}', [OrderV1::class, 'update_detail']);
+
+      Route::delete('v1/orders/{id}/remove_product/{order_detail_id}', [OrderV1::class, 'remove_detail_item']);
+
+      Route::put('v1/orders/{id}/confirm_order', [OrderV1::class, 'confirm_order']);
+
+      Route::apiResource('v1/commitments', CommitmentV1::class);
+
+      Route::get('v1/commitments_grouped_by_user', [CommitmentV1::class, 'commitments_grouped_by_user']);
+
+      Route::apiResource('v1/payments', PaymentV1::class)
+            ->only(['index', 'show', 'store']);
 });
 
-Route::apiResource('v1/providers', ProviderV1::class)
-      ->only(['index', 'show', 'destroy'])
-      ->middleware('auth:sanctum');
-
-Route::apiResource('v1/brands', BrandV1::class)
-      ->middleware('auth:sanctum');
-
-Route::apiResource('v1/articles', ArticleV1::class)
-      ->middleware('auth:sanctum');
-
-Route::apiResource('v1/customers', CustomerV1::class)
-      ->middleware('auth:sanctum');
-
-Route::get('v1/customers/{id}/commitments', [CustomerV1::class, 'commitments_by_user'])
-      ->middleware('auth:sanctum');
-
-Route::post('v1/customers/{id}/payments', [CustomerV1::class, 'create_payment'])
-      ->middleware('auth:sanctum');
-
-Route::apiResource('v1/orders', OrderV1::class)
-      ->middleware('auth:sanctum');
-
-Route::get('v1/orders_by_status', [OrderV1::class, 'orders_by_status'])
-      ->middleware('auth:sanctum');
-
-Route::post('v1/orders/{id}/add_product', [OrderV1::class, 'add_product_to_order'])
-      ->middleware('auth:sanctum');
-
-Route::put('v1/orders/{id}/update_detail/{order_detail_id}', [OrderV1::class, 'update_detail'])
-      ->middleware('auth:sanctum');
-
-Route::delete('v1/orders/{id}/remove_product/{order_detail_id}', [OrderV1::class, 'remove_detail_item'])
-      ->middleware('auth:sanctum');
-
-Route::put('v1/orders/{id}/confirm_order', [OrderV1::class, 'confirm_order'])
-      ->middleware('auth:sanctum');
-
-Route::apiResource('v1/commitments', CommitmentV1::class)
-      ->middleware('auth:sanctum');
-
-Route::get('v1/commitments_grouped_by_user', [CommitmentV1::class, 'commitments_grouped_by_user'])
-      ->middleware('auth:sanctum');
-
-Route::apiResource('v1/payments', PaymentV1::class)
-      ->only(['index', 'show', 'store'])
-      ->middleware('auth:sanctum');
-
-
-Route::post('login', [App\Http\Controllers\Api\LoginController::class, 'login']);
+Route::post('sessions', [LoginController::class, 'login']);
