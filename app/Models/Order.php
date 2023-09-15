@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\ClosedScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,6 +12,13 @@ class Order extends Model
 {
     use HasFactory;
     protected $fillable = ['order_date', 'customer_id', 'status'];
+
+    // protected static function boot()
+    // {
+    //     parent::boot();
+    //     static::addGlobalScope(new ClosedScope);
+    // }
+
 
     public function order_details(): HasMany
     {
@@ -26,6 +34,11 @@ class Order extends Model
     public function scopeStatus($query, $status)
     {
         return $query->where('status', $status);
+    }
+
+    public function scopeOpen($query)
+    {
+        return $query->where('status', 'OPEN');
     }
 
     public function total_order($order_id)
