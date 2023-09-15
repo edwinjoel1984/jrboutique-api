@@ -25,9 +25,10 @@ class CommitmentController extends Controller
      */
     public function commitments_grouped_by_user()
     {
+        // $commitments = Commitment::all();
         $commitments = DB::table('commitments')
             ->join('customers', 'commitments.customer_id', '=', 'customers.id')
-            ->select(DB::raw('customers.first_name, customers.last_name, customer_id, sum(pending_amount) as total_pending_amount'))
+            ->select(DB::raw('CONCAT (first_name, " ",last_name) AS customer_name, customer_id, sum(pending_amount) as total_pending_amount'))
             ->groupBy('customer_id')
             ->orderBy('customer_id')
             ->havingRaw('sum(pending_amount) > ?', [0])
