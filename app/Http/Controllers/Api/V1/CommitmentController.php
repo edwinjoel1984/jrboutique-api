@@ -53,8 +53,7 @@ class CommitmentController extends Controller
         $validator = Validator::make($input, [
             'date' => 'required',
             'total_amount' => 'required',
-            'customer_id' => 'required',
-            'memo' => 'required',
+            'customer_id' => 'required'
         ]);
 
         if ($validator->fails()) {
