@@ -96,4 +96,11 @@ class CommitmentController extends Controller
     {
         //
     }
+
+    public function dashboard_data()
+    {
+        $total_pending_amount = Commitment::sum('pending_amount');
+        $response = ["all_pending_amount" => $total_pending_amount];
+        return $this->sendResponse($response, "Dashboard data retrieved successfully.");
+    }
 }

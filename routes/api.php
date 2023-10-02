@@ -60,6 +60,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
       Route::get('v1/commitments_grouped_by_user', [CommitmentV1::class, 'commitments_grouped_by_user']);
 
+      Route::get('v1/dashboard_data', [CommitmentV1::class, 'dashboard_data']);
+
+
       Route::apiResource('v1/payments', PaymentV1::class)
             ->only(['index', 'show', 'store']);
 });
