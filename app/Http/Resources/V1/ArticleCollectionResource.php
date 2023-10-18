@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources\V1;
 
+use App\Models\Brand;
+use App\Models\GroupSize;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
@@ -17,8 +19,9 @@ class ArticleCollectionResource extends ResourceCollection
     {
 
         return [
-            'data' => $this->collection,
-            'another_data' => ["test" => "test-value"]
+            'articles' => $this->collection,
+            'brands' => Brand::all(),
+            'group_sizes' => GroupSize::all()
         ];
     }
 }

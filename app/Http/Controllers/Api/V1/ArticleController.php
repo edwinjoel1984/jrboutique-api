@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\V1\ArticleCollectionResource;
 use App\Models\Article;
 use App\Models\ArticleSize;
 use Validator;
@@ -18,7 +19,7 @@ class ArticleController extends Controller
     public function index()
     {
         $articles = Article::all();
-        return $this->sendResponse(ArticleResource::collection($articles), 'Articles retrieved successfully.');
+        return new ArticleCollectionResource($articles);
 
         // return ArticleResource::collection(Article::latest()->paginate());
     }

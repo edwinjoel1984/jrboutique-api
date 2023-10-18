@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\CustomerController as CustomerV1;
 use App\Http\Controllers\Api\V1\OrderController as OrderV1;
 use App\Http\Controllers\Api\V1\CommitmentController as CommitmentV1;
 use App\Http\Controllers\Api\V1\PaymentController as PaymentV1;
+use App\Http\Controllers\Api\V1\GroupSizeController as GroupSizeV1;
 use App\Http\Controllers\Api\LoginController as LoginController;
 
 /*
@@ -65,6 +66,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
       Route::apiResource('v1/payments', PaymentV1::class)
             ->only(['index', 'show', 'store']);
+
+      Route::apiResource('v1/group_sizes', GroupSizeV1::class)
+            ->only(['show']);
 });
 
 Route::post('sessions', [LoginController::class, 'login']);

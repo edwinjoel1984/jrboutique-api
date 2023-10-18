@@ -15,4 +15,9 @@ class ArticleSize extends Model
     {
         return $this->belongsTo(Article::class);
     }
+
+    public function size(): BelongsTo
+    {
+        return $this->belongsTo(Size::class);
+    }
 }
