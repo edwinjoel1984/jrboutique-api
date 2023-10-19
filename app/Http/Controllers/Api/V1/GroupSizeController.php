@@ -7,8 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\V1\GroupSizeResource;
 use App\Models\ArticleSize;
 use App\Models\GroupSize;
-use DNS2D;
-use DNS1D;
 
 class GroupSizeController extends Controller
 {
