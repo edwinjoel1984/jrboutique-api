@@ -13,9 +13,7 @@ class LoginController extends Controller
     public function login(Request $request)
     {
 
-
         $this->validateLogin($request);
-
         if (Auth::attempt($request->only('email', 'password'))) {
             $user = $request->user();
             $token =  $user->createToken($request->email)->plainTextToken;
@@ -23,6 +21,7 @@ class LoginController extends Controller
                 'token' => $token,
                 'email' => $user->email,
                 'name' => $user->name,
+                'role' => $user->role_id,
                 'message' => 'Success'
             ]);
         }
