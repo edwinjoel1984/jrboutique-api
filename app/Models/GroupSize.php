@@ -11,6 +11,6 @@ class GroupSize extends Model
 
     public function sizes()
     {
-        return $this->belongsToMany(Size::class, 'groupsizes_sizes');
+        return $this->belongsToMany(Size::class, 'groupsizes_sizes', 'group_size_id', 'size_id')->orderBy('order', 'ASC');
     }
 }

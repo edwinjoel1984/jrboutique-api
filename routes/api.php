@@ -63,6 +63,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
       Route::get('v1/dashboard_data', [CommitmentV1::class, 'dashboard_data']);
 
+      Route::get('v1/generate_qrcode', [GroupSizeV1::class, 'generate_qrcode']);
+
+
 
       Route::apiResource('v1/payments', PaymentV1::class)
             ->only(['index', 'show', 'store']);
