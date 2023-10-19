@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\V1\ArticleCollectionResource;
 use App\Models\Article;
 use App\Models\ArticleSize;
 use Validator;
@@ -18,7 +19,7 @@ class ArticleController extends Controller
     public function index()
     {
         $articles = Article::all();
-        return $this->sendResponse(ArticleResource::collection($articles), 'Articles retrieved successfully.');
+        return new ArticleCollectionResource($articles);
 
         // return ArticleResource::collection(Article::latest()->paginate());
     }
@@ -32,8 +33,6 @@ class ArticleController extends Controller
         $input = $request->all();
         $validator = Validator::make($input, [
             'name' => 'required',
-            'ref' => 'required',
-            'barcode' => 'required',
             'brand_id' => 'required',
             'size_details' => 'required'
         ]);
@@ -45,6 +44,7 @@ class ArticleController extends Controller
         $article = Article::create($input);
         $details = [];
         foreach ($input["size_details"] as $articleSize) {
+            $articleSize["uniquecode"] = $this->generateBarcodeNumber();
             array_push($details, new ArticleSize($articleSize));
         }
         $article->stock()->saveMany($details);
@@ -91,5 +91,25 @@ class ArticleController extends Controller
             return response()->json(['message' => 'Success'], 204);
         }
         return response()->json(['message' => 'Not found'], 404);
+    }
+
+    function generateBarcodeNumber()
+    {
+        $number = mt_rand(1000000000, 9999999999); // better than rand()
+
+        // call the same function if the barcode exists already
+        if ($this->barcodeNumberExists($number)) {
+            return $this->generateBarcodeNumber();
+        }
+
+        // otherwise, it's valid and can be used
+        return $number;
+    }
+
+    function barcodeNumberExists($number)
+    {
+        // query the database and return a boolean
+        // for instance, it might look like this in Laravel
+        return ArticleSize::where('uniquecode', '=', $number)->exists();
     }
 }

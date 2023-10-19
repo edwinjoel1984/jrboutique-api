@@ -9,10 +9,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ArticleSize extends Model
 {
     use HasFactory;
-    protected $fillable = ["price", "quantity", "article_id", "size_id"];
+    protected $fillable = ["price", "quantity", "article_id", "size_id", "uniquecode"];
 
     public function articles(): BelongsTo
     {
         return $this->belongsTo(Article::class);
+    }
+
+    public function size(): BelongsTo
+    {
+        return $this->belongsTo(Size::class);
     }
 }
