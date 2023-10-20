@@ -10,6 +10,8 @@ use Validator;
 use Illuminate\Http\Request;
 
 use App\Http\Resources\V1\ArticleResource;
+use App\Models\Transaction;
+use Illuminate\Support\Facades\DB;
 
 class ArticleController extends Controller
 {
@@ -40,16 +42,21 @@ class ArticleController extends Controller
         if ($validator->fails()) {
             return $this->sendError('Validation Error.', $validator->errors());
         }
-
-        $article = Article::create($input);
-        $details = [];
-        foreach ($input["size_details"] as $articleSize) {
-            $articleSize["uniquecode"] = $this->generateBarcodeNumber();
-            array_push($details, new ArticleSize($articleSize));
+        try {
+            DB::beginTransaction();
+            $article = Article::create($input);
+            foreach ($input["size_details"] as $articleSize) {
+                $articleSize["uniquecode"] = $this->generateBarcodeNumber();
+                $articleSize["article_id"] = $article["id"];
+                $newArticleSize =  ArticleSize::create($articleSize);
+                $newArticleSize->transaction()->save(new Transaction(["order_id" => null,  "quantity" => $newArticleSize["quantity"], "type" => "ENTRADA DE INVENTARIO", "memo" => "Stock Inicial"]));
+            }
+            DB::commit();
+            return $this->sendResponse(new ArticleResource($article), 'Article created successfully.');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return $this->sendError('Something went wrong.', $th, 422);
         }
-        $article->stock()->saveMany($details);
-
-        return $this->sendResponse(new ArticleResource($article), 'Article created successfully.');
     }
 
     /**

@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ArticleSize extends Model
 {
     use HasFactory;
-    protected $fillable = ["purchase_price", "sale_price", "quantity", "article_id", "size_id", "uniquecode"];
+    protected $fillable = ["id", "purchase_price", "sale_price", "quantity", "article_id", "size_id", "uniquecode"];
 
     public function articles(): BelongsTo
     {
@@ -19,5 +20,9 @@ class ArticleSize extends Model
     public function size(): BelongsTo
     {
         return $this->belongsTo(Size::class);
+    }
+    public function transaction(): HasMany
+    {
+        return $this->hasMany(Transaction::class);
     }
 }

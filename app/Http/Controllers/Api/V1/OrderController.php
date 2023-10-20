@@ -120,9 +120,9 @@ class OrderController extends Controller
             }
 
             $order = Order::find($order_id);
-            // if ($order['status'] === 'CLOSED') {
-            //     return $this->sendError('Order has already been closed.', [], 422);
-            // }
+            if ($order['status'] === 'CLOSED') {
+                return $this->sendError('Order has already been closed.', [], 422);
+            }
 
             //Update Order 
             $order['customer_id'] = $input['customer_id'];
@@ -135,7 +135,7 @@ class OrderController extends Controller
             foreach ($items as $item) {
                 $articleSize = ArticleSize::find($item['article_size_id']);
                 $articleSize['quantity'] = $articleSize['quantity'] - $item['quantity'];
-                $transactionData = ["article_size_id" => $item['article_size_id'], "order_id" => $order_id, "customer_id" => $order['customer_id'],  "type" => "Venta", "quantity" => $item['quantity'], "memo" => "Venta Order #" . $order_id];
+                $transactionData = ["article_size_id" => $item['article_size_id'], "order_id" => $order_id,  "type" => "Venta", "quantity" => $item['quantity'], "memo" => "Venta Order #" . $order_id];
                 $articleSize->save();
                 Transaction::create($transactionData);
             }
