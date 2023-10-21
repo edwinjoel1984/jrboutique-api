@@ -38,6 +38,8 @@ Route::middleware('auth:sanctum')->group(function () {
       Route::apiResource('v1/brands', BrandV1::class);
 
       Route::apiResource('v1/articles', ArticleV1::class);
+      // dd('Helloo');
+      Route::get('v1/find_by_name', [ArticleV1::class, 'find_by_name']);
 
       Route::apiResource('v1/customers', CustomerV1::class);
 

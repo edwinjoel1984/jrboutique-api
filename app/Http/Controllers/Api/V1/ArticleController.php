@@ -119,4 +119,18 @@ class ArticleController extends Controller
         // for instance, it might look like this in Laravel
         return ArticleSize::where('uniquecode', '=', $number)->exists();
     }
+
+    public function find_by_name(Request $request)
+    {
+        $input = $request->all();
+        $result = DB::table('article_sizes as as2')
+            ->select('as2.id', 'a.name', 's.name as size', 'as2.sale_price', 'as2.quantity as stock', 'as2.uniquecode')
+            ->join('articles as a', 'as2.article_id', '=', 'a.id')
+            ->join('sizes as s', 's.id', '=', 'as2.size_id')
+            ->where('as2.quantity', '>', 0)
+            ->where('a.name', 'like', "%" . $input['name'] . "%")
+            ->get();
+
+        return $result;
+    }
 }
