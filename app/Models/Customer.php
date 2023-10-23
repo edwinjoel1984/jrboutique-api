@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Customer extends Model
 {
     use HasFactory;
-    protected $fillable = ['first_name', 'last_name', 'document', 'phone'];
+    protected $fillable = ['first_name', 'last_name', 'document', 'phone', 'address'];
 
     public function orders(): HasMany
     {
