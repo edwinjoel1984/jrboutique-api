@@ -27,7 +27,6 @@ class OrderController extends Controller
         $input = $request->all();
         $validator = Validator::make($input, [
             'order_date' => 'required',
-            'customer_id' => 'required',
             'status' => 'required',
         ]);
 
@@ -76,21 +75,8 @@ class OrderController extends Controller
     public function update_detail(Request $request, $order_id, $order_detail_id)
     {
         $input = $request->all();
-        $validator = Validator::make($input, [
-            'unit_price' => 'required',
-            'quantity' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            return $this->sendError('Validation Error.', $validator->errors());
-        }
-        $input['order_id'] = $order_id;
         $order = Order::find($order_id);
-        $orderDetail = OrderDetail::find($order_detail_id);
-        $orderDetail['unit_price'] = $input['unit_price'];
-        $orderDetail['quantity'] = $input['quantity'];
-
-        $orderDetail->save();
+        OrderDetail::whereId($order_detail_id)->update($input);
 
         return $this->sendResponse(new OrderResource($order), 'Product updated successfully.');
     }
@@ -156,5 +142,10 @@ class OrderController extends Controller
             DB::rollback();
             return $this->sendError('Something went wrong.', $e, 422);
         }
+    }
+
+    public function update(Request $request, $order_id)
+    {
+        return Order::whereId($order_id)->update($request->all());
     }
 }

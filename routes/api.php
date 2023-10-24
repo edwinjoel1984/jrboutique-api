@@ -38,8 +38,8 @@ Route::middleware('auth:sanctum')->group(function () {
       Route::apiResource('v1/brands', BrandV1::class);
 
       Route::apiResource('v1/articles', ArticleV1::class);
-      // dd('Helloo');
-      Route::get('v1/find_by_name', [ArticleV1::class, 'find_by_name']);
+
+      Route::get('v1/find_article_by_name', [ArticleV1::class, 'find_by_name']);
 
       Route::apiResource('v1/customers', CustomerV1::class);
 
@@ -58,6 +58,7 @@ Route::middleware('auth:sanctum')->group(function () {
       Route::delete('v1/orders/{id}/remove_product/{order_detail_id}', [OrderV1::class, 'remove_detail_item']);
 
       Route::put('v1/orders/{id}/confirm_order', [OrderV1::class, 'confirm_order']);
+
 
       Route::apiResource('v1/commitments', CommitmentV1::class);
 

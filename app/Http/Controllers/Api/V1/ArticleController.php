@@ -124,7 +124,7 @@ class ArticleController extends Controller
     {
         $input = $request->all();
         $result = DB::table('article_sizes as as2')
-            ->select('as2.id', 'a.name', 's.name as size', 'as2.sale_price', 'as2.quantity as stock', 'as2.uniquecode')
+            ->select('as2.id', DB::raw('CONCAT(a.name, \' (Talla \', s.name, \') \') as name'), 's.name as size', 'as2.sale_price', 'as2.quantity as stock', 'as2.uniquecode')
             ->join('articles as a', 'as2.article_id', '=', 'a.id')
             ->join('sizes as s', 's.id', '=', 'as2.size_id')
             ->where('as2.quantity', '>', 0)

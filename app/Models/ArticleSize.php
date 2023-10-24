@@ -12,7 +12,7 @@ class ArticleSize extends Model
     use HasFactory;
     protected $fillable = ["id", "purchase_price", "sale_price", "quantity", "article_id", "size_id", "uniquecode"];
 
-    public function articles(): BelongsTo
+    public function article(): BelongsTo
     {
         return $this->belongsTo(Article::class);
     }
@@ -24,5 +24,10 @@ class ArticleSize extends Model
     public function transaction(): HasMany
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    public function orderDetail(): BelongsTo
+    {
+        return $this->belongsTo(OrderDetail::class);
     }
 }

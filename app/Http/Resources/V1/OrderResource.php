@@ -20,11 +20,12 @@ class OrderResource extends JsonResource
             $total = $total + $item->quantity * $item->unit_price;
         }
         return [
+            'id' => $this->id,
             'date' => $this->order_date,
-            'customer' => $this->customer->full_name(),
+            'customer' => $this->customer,
             'status' => $this->status,
             'total' => $total,
-            'details' => $details
+            'details' => OrderDetailResource::collection($details)
         ];
     }
 }
