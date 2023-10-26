@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\V1\OrderDetailResource;
 use App\Http\Resources\V1\OrderResource;
 use App\Models\ArticleSize;
 use App\Models\Commitment;
@@ -66,27 +67,23 @@ class OrderController extends Controller
             return $this->sendError('Validation Error.', $validator->errors());
         }
         $input['order_id'] = $order_id;
-        OrderDetail::create($input);
-        $order = Order::find($order_id);
+        $orderDetail = OrderDetail::create($input);
 
-        return $this->sendResponse(new OrderResource($order), 'Product added successfully.');
+        return $this->sendResponse(new OrderDetailResource($orderDetail), 'Product added successfully.');
     }
 
     public function update_detail(Request $request, $order_id, $order_detail_id)
     {
         $input = $request->all();
-        $order = Order::find($order_id);
         OrderDetail::whereId($order_detail_id)->update($input);
 
-        return $this->sendResponse(new OrderResource($order), 'Product updated successfully.');
+        return $this->sendResponse([], 'Product updated successfully.');
     }
 
     public function remove_detail_item(Request $request, $order_id, $order_detail_id)
     {
-        $order = Order::find($order_id);
         OrderDetail::destroy($order_detail_id);
-
-        return $this->sendResponse(new OrderResource($order), 'Product removed successfully.');
+        return $this->sendResponse([], 'Product removed successfully.');
     }
 
     public function confirm_order(Request $request, $order_id)
@@ -95,8 +92,6 @@ class OrderController extends Controller
         try {
             $input = $request->all();
             $validator = Validator::make($input, [
-                'order_date' => 'required',
-                'customer_id' => 'required',
                 'first_payment' => 'required',
                 'payment_method' => 'required',
             ]);
@@ -111,8 +106,6 @@ class OrderController extends Controller
             }
 
             //Update Order 
-            $order['customer_id'] = $input['customer_id'];
-            $order['order_date'] = $input['order_date'];
             $order['status'] = $input['status'];
             $order->save();
 
@@ -126,7 +119,6 @@ class OrderController extends Controller
                 Transaction::create($transactionData);
             }
 
-            // Transaction::insert($transactionsByOrder);
 
             //Create Commitment
             if ($order['payment_method'] === 'CREDITO') {

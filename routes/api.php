@@ -40,6 +40,7 @@ Route::middleware('auth:sanctum')->group(function () {
       Route::apiResource('v1/articles', ArticleV1::class);
 
       Route::get('v1/find_article_by_name', [ArticleV1::class, 'find_by_name']);
+      Route::get('v1/find_article_by_code', [ArticleV1::class, 'find_by_code']);
 
       Route::apiResource('v1/customers', CustomerV1::class);
 
