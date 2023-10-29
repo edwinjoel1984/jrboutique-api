@@ -19,7 +19,8 @@ class ArticleSizeResource extends JsonResource
             'purchase_price' => $this->purchase_price,
             'sale_price' => $this->sale_price,
             'quantity' => $this->quantity,
-            'size' => $this->size->name
+            'size' => $this->size->name,
+            'uniquecode' => $this->uniquecode,
         ];
     }
 }
