@@ -159,7 +159,8 @@ class ArticleController extends Controller
             $articleSize->transaction()->save(new Transaction(["order_id" => null,  "quantity" => $request->quantity, "type" => "ENTRADA DE INVENTARIO", "memo" => "Adicion Manual de Producto"]));
 
             DB::commit();
-            return $this->sendResponse([], 'Inventory updated successfully.');
+            $articles = Article::all();
+            return new ArticleCollectionResource($articles);
         } catch (\Throwable $th) {
             DB::rollBack();
             return $this->sendError('Something went wrong.', $th, 422);
