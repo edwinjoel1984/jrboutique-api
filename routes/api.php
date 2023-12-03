@@ -12,6 +12,8 @@ use App\Http\Controllers\Api\V1\CommitmentController as CommitmentV1;
 use App\Http\Controllers\Api\V1\PaymentController as PaymentV1;
 use App\Http\Controllers\Api\V1\GroupSizeController as GroupSizeV1;
 use App\Http\Controllers\Api\LoginController as LoginController;
+// use App\Models\User as UserV1;
+// use Illuminate\Support\Facades\Hash;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,6 +43,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
       Route::get('v1/find_article_by_name', [ArticleV1::class, 'find_by_name']);
       Route::get('v1/find_article_by_code', [ArticleV1::class, 'find_by_code']);
+      Route::put('v1/add_article_to_inventory', [ArticleV1::class, 'addArticleSizeToInventory']);
 
       Route::apiResource('v1/customers', CustomerV1::class);
 
@@ -79,3 +82,10 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::post('sessions', [LoginController::class, 'login']);
+// Route::get('temporary-password-reset', function () {
+//       $user = UserV1::where('email', 'edwinjoel1984@gmail.com')->first();
+//       $user->password = Hash::make('123456');
+//       $user->save();
+
+//       return 'Success!';
+// });

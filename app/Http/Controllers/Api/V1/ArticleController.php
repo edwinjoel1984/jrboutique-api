@@ -146,4 +146,23 @@ class ArticleController extends Controller
 
         return $result;
     }
+
+    public function addArticleSizeToInventory(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+            $articleSize = ArticleSize::find($request->article_size_id);
+            $newQuantity = $articleSize['quantity'] + $request->quantity;
+            // dd($newQuantity);
+            $articleSize['quantity'] = $newQuantity;
+            $articleSize->save();
+            $articleSize->transaction()->save(new Transaction(["order_id" => null,  "quantity" => $request->quantity, "type" => "ENTRADA DE INVENTARIO", "memo" => "Adicion Manual de Producto"]));
+
+            DB::commit();
+            return $this->sendResponse([], 'Inventory updated successfully.');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return $this->sendError('Something went wrong.', $th, 422);
+        }
+    }
 }
