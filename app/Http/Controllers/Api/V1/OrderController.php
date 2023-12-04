@@ -94,6 +94,8 @@ class OrderController extends Controller
             $validator = Validator::make($input, [
                 'first_payment' => 'required',
                 'payment_method' => 'required',
+                'discount_value' => 'required',
+                'order_total' => 'required',
             ]);
 
             if ($validator->fails()) {
@@ -107,6 +109,9 @@ class OrderController extends Controller
 
             //Update Order 
             $order['status'] = $input['status'];
+            $order['discount_value'] = $input['discount_value'];
+            $order['first_payment'] = $input['first_payment_amount'];
+            $order['total'] = $input['order_total'];
             $order->save();
 
             //Update Inventory 

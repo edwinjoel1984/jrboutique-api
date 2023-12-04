@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Order extends Model
 {
     use HasFactory;
-    protected $fillable = ['order_date', 'customer_id', 'status'];
+    protected $fillable = ['order_date', 'customer_id', 'status', 'discount_value', 'total', 'first_amount'];
 
     // protected static function boot()
     // {
