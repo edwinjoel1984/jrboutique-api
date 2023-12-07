@@ -22,7 +22,7 @@ class CustomerController extends Controller
 
     public function index()
     {
-        $customers = Customer::all();
+        $customers = Customer::orderBy('first_name')->get();
         return $this->sendResponse(CustomerResource::collection($customers), 'Customers retrieved successfully.');
     }
 
