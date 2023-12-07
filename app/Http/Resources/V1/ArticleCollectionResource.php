@@ -20,7 +20,7 @@ class ArticleCollectionResource extends ResourceCollection
 
         return [
             'articles' => $this->collection,
-            'brands' => Brand::all(),
+            'brands' => Brand::orderBy('name')->get(),
             'group_sizes' => GroupSize::all()
         ];
     }
