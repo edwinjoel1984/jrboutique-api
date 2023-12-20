@@ -92,7 +92,7 @@ class CustomerController extends Controller
 
     public function commitments_by_user($customer_id)
     {
-        $commitments = Customer::find($customer_id)->commitments()->where('pending_amount', '>', 0)->get();
+        $commitments = Customer::find($customer_id)->commitments()->orderByDesc('date')->orderByDesc('id')->get();
         return $this->sendResponse($commitments, 'Commitments by user retrieved successfully.');
     }
 

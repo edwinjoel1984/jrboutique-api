@@ -72,6 +72,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
       Route::get('v1/generate_qrcode', [GroupSizeV1::class, 'generate_qrcode']);
 
+      Route::get('v1/commitments_grouped_by_user_general', [CommitmentV1::class, 'commitments_grouped_by_user_general']);
+
+      Route::get('v1/commitments/{id}/payments', [CommitmentV1::class, 'payments_to_commitments']);
+
 
 
       Route::apiResource('v1/payments', PaymentV1::class)

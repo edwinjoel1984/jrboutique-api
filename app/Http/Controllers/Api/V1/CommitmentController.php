@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Models\Commitment;
+use App\Models\PaymentCommitment;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\V1\CommitmentResource;
 use Illuminate\Http\Request;
@@ -34,6 +35,31 @@ class CommitmentController extends Controller
             ->havingRaw('sum(pending_amount) > ?', [0])
             ->get();
         return $this->sendResponse($commitments, 'Commitments retrieved successfully.');
+    }
+    public function commitments_grouped_by_user_general()
+    {
+        // $commitments = Commitment::all();
+        $commitments = DB::table('commitments as c')
+            ->join('customers as c2', 'c2.id', '=', 'c.customer_id')
+            ->select(
+                'c.customer_id',
+                'c2.first_name',
+                'c2.last_name',
+                DB::raw('SUM(c.total_amount) as total_purchased'),
+                DB::raw('SUM(c.pending_amount) as pending_amount')
+            )
+            ->groupBy('c.customer_id')
+            ->orderByDesc('total_purchased') // Assuming "comprado" is the alias for the total_amount
+            ->get();
+        return $this->sendResponse($commitments, 'Commitments retrieved successfully.');
+    }
+    public function payments_to_commitments(Request $request, $commitmentId)
+    {
+        $payments = PaymentCommitment::join('payments as p', 'p.id', '=', 'payment_commitments.payment_id')
+            ->where('payment_commitments.commitment_id', $commitmentId)
+            ->select('payment_commitments.date', 'p.amount as payment', 'payment_commitments.amount as payment_to_commitment')
+            ->get();
+        return $this->sendResponse($payments, 'Commitments retrieved successfully.');
     }
 
     /**
