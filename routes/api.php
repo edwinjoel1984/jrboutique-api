@@ -70,6 +70,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
       Route::get('v1/dashboard_data', [CommitmentV1::class, 'dashboard_data']);
 
+      Route::get('v1/commitments_by_date', [CommitmentV1::class, 'commitments_by_date']);
+
       Route::get('v1/generate_qrcode', [GroupSizeV1::class, 'generate_qrcode']);
 
       Route::get('v1/commitments_grouped_by_user_general', [CommitmentV1::class, 'commitments_grouped_by_user_general']);

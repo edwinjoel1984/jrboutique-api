@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\V1\PaymentResource;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 
@@ -13,8 +14,8 @@ class PaymentController extends Controller
      */
     public function index()
     {
-        $payments = Payment::all();
-        return $this->sendResponse($payments, 'Payments retrieved successfully.');
+        $payments = Payment::orderByDesc('date')->get();
+        return $this->sendResponse(PaymentResource::collection($payments), 'Payments retrieved successfully.');
     }
 
     /**

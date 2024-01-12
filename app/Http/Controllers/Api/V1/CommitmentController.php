@@ -129,4 +129,17 @@ class CommitmentController extends Controller
         $response = ["all_pending_amount" => $total_pending_amount];
         return $this->sendResponse($response, "Dashboard data retrieved successfully.");
     }
+    public function commitments_by_date(Request $request)
+    {
+        $input = $request->all();
+        $commitments = DB::table('commitments')
+            ->select(DB::raw('DAYOFMONTH(date) as day'), DB::raw('COALESCE(SUM(total_amount), 0) as total'))
+            ->whereYear('date', '=', $input["year"])
+            ->whereMonth('date', '=', $input["month"])
+            ->groupBy('day')
+            ->orderByDesc('day')
+            ->get();
+
+        return $this->sendResponse($commitments, "Commitments filtered successfully.");
+    }
 }
