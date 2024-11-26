@@ -43,7 +43,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
       Route::get('v1/find_article_by_name', [ArticleV1::class, 'find_by_name']);
       Route::get('v1/find_article_by_code', [ArticleV1::class, 'find_by_code']);
-      Route::put('v1/add_article_to_inventory', [ArticleV1::class, 'addArticleSizeToInventory']);
+      Route::put('v1/update_inventory', [ArticleV1::class, 'updateArticleSizeInInventory']);
 
       Route::apiResource('v1/customers', CustomerV1::class);
 
@@ -55,6 +55,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
       Route::get('v1/orders_by_status', [OrderV1::class, 'orders_by_status']);
 
+      Route::post('v1/orders/{id}/create_offer_and_add_offer', [OrderV1::class, 'add_offer_to_order']);
       Route::post('v1/orders/{id}/add_product', [OrderV1::class, 'add_product_to_order']);
 
       Route::put('v1/orders/{id}/update_detail/{order_detail_id}', [OrderV1::class, 'update_detail']);

@@ -147,16 +147,32 @@ class ArticleController extends Controller
         return $result;
     }
 
-    public function addArticleSizeToInventory(Request $request)
+    public function updateArticleSizeInInventory(Request $request)
     {
         try {
             DB::beginTransaction();
             $articleSize = ArticleSize::find($request->article_size_id);
-            $newQuantity = $articleSize['quantity'] + $request->quantity;
+            if ($request->action === "ADD") {
+                $newQuantity = $articleSize['quantity'] + $request->quantity;
+                $transaction = new Transaction([
+                    "order_id" => null,
+                    "quantity" => $request->quantity,
+                    "type" => "ENTRADA DE INVENTARIO",
+                    "memo" => "Adición Manual de Producto"
+                ]);
+            } else {
+                $newQuantity = $articleSize['quantity'] - $request->quantity;
+                $transaction = new Transaction([
+                    "order_id" => null,
+                    "quantity" => $request->quantity,
+                    "type" => "OTRO",
+                    "memo" => "Disminución manual de producto por error"
+                ]);
+            }
             // dd($newQuantity);
             $articleSize['quantity'] = $newQuantity;
             $articleSize->save();
-            $articleSize->transaction()->save(new Transaction(["order_id" => null,  "quantity" => $request->quantity, "type" => "ENTRADA DE INVENTARIO", "memo" => "Adicion Manual de Producto"]));
+            $articleSize->transaction()->save($transaction);
 
             DB::commit();
             $articles = Article::all();
