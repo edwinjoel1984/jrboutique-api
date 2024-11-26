@@ -7,6 +7,7 @@ use App\Http\Resources\V1\OrderDetailResource;
 use App\Http\Resources\V1\OrderResource;
 use App\Models\ArticleSize;
 use App\Models\Commitment;
+use App\Models\Offer;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Transaction;
@@ -72,6 +73,35 @@ class OrderController extends Controller
         return $this->sendResponse(new OrderDetailResource($orderDetail), 'Product added successfully.');
     }
 
+    
+    public function add_offer_to_order(Request $request, $order_id)
+    {
+        $input = $request->all();
+
+        $validator = Validator::make($input, [
+            'name' => 'required',
+            'amount' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('Validation Error.', $validator->errors());
+        }
+        $input['order_id'] = $order_id;
+        $input['price'] = $input['amount'];
+
+        DB::beginTransaction();
+        try {
+            $newOffer = Offer::create($input);
+            $valuesOrderDetail = ["offer_id" => $newOffer->id, "unit_price" => $newOffer->price, "quantity" => 1, "order_id" => $order_id];
+            $orderDetail = OrderDetail::create($valuesOrderDetail);
+            DB::commit();
+            return $this->sendResponse(new OrderDetailResource($orderDetail), 'Product added successfully.');
+        } catch (\Exception  $e) {
+            DB::rollback();
+            return $this->sendError('Something went wrong.', $e, 422);
+        }
+    }
+
     public function update_detail(Request $request, $order_id, $order_detail_id)
     {
         $input = $request->all();
@@ -115,7 +145,7 @@ class OrderController extends Controller
             $order->save();
 
             //Update Inventory 
-            $items = OrderDetail::where('order_id', $order_id)->get();
+            $items = OrderDetail::where('order_id', $order_id)->whereNotNull('article_size_id')->get();
             foreach ($items as $item) {
                 $articleSize = ArticleSize::find($item['article_size_id']);
                 $articleSize['quantity'] = $articleSize['quantity'] - $item['quantity'];

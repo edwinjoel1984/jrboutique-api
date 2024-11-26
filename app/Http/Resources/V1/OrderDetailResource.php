@@ -20,9 +20,8 @@ class OrderDetailResource extends JsonResource
             'sale_price' => $this->unit_price,
             'quantity' => $this->quantity,
             'sale_total' => $this->quantity * $this->unit_price,
-            'code' => 123,
-            'name' => $this->articleSize->article->name . ' (Talla ' . $this->articleSize->size->name . ')',
-            'code' => $this->articleSize->uniquecode
+            'name' => $this->articleSize ? $this->articleSize->article->name . ' (Talla ' . $this->articleSize->size->name . ')' : "PROM - ".$this->Offer->name,
+            'code' => $this->articleSize ? $this->articleSize->uniquecode : '0000000000'
         ];
     }
 }
