@@ -25,6 +25,8 @@ class OrderResource extends JsonResource
             'customer' => $this->customer,
             'status' => $this->status,
             'total' => $total,
+            'first_payment' => $this->first_payment,
+            'discount_value' => $this->discount_value,
             'details' => OrderDetailResource::collection($details)
         ];
     }
