@@ -10,6 +10,7 @@ use Validator;
 use Illuminate\Http\Request;
 
 use App\Http\Resources\V1\ArticleResource;
+use App\Http\Resources\V1\ArticleSizeResource2;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\DB;
 
@@ -123,28 +124,24 @@ class ArticleController extends Controller
     public function find_by_name(Request $request)
     {
         $input = $request->all();
-        $result = DB::table('article_sizes as as2')
-            ->select('as2.id', DB::raw('CONCAT(a.name, \' (Talla \', s.name, \') \') as name'), 's.name as size', 'as2.sale_price', 'as2.quantity as stock', 'as2.uniquecode')
-            ->join('articles as a', 'as2.article_id', '=', 'a.id')
-            ->join('sizes as s', 's.id', '=', 'as2.size_id')
-            ->where('as2.quantity', '>', 0)
-            ->where('a.name', 'like', "%" . $input['name'] . "%")
+        $result = ArticleSize::with(['article', 'size'])
+            ->where('quantity', '>', 0)
+            ->whereHas('article', function ($query) use ($input) {
+                $query->where('name', 'like', "%" . $input['name'] . "%");
+            })
             ->get();
 
-        return $result;
+        return ArticleSizeResource2::collection($result);
     }
     public function find_by_code(Request $request)
     {
         $input = $request->all();
-        $result = DB::table('article_sizes as as2')
-            ->select('as2.id', DB::raw('CONCAT(a.name, \' (Talla \', s.name, \') \') as name'), 's.name as size', 'as2.sale_price', 'as2.quantity as stock', 'as2.uniquecode')
-            ->join('articles as a', 'as2.article_id', '=', 'a.id')
-            ->join('sizes as s', 's.id', '=', 'as2.size_id')
-            ->where('as2.quantity', '>', 0)
-            ->where('as2.uniquecode', '=', $input['code'])
+        $result = ArticleSize::with(['article', 'size'])
+            ->where('quantity', '>', 0)
+            ->where('uniquecode', $input['code'])
             ->get();
 
-        return $result;
+        return  ArticleSizeResource2::collection($result);
     }
 
     public function updateArticleSizeInInventory(Request $request)

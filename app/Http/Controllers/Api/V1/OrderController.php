@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\V1\OrderDetailResource;
 use App\Http\Resources\V1\OrderResource;
+use App\Http\Resources\V1\OrderResource2;
 use App\Models\ArticleSize;
 use App\Models\Commitment;
 use App\Models\Offer;
@@ -44,15 +45,15 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        return $this->sendResponse(new OrderResource($order), 'Order retrieved successfully.');
+        return $this->sendResponse(new OrderResource($order->load('order_details', 'order_details.articleSize', 'order_details.articleSize.article', 'order_details.Offer')), 'Order retrieved successfully.');
     }
 
 
     public function orders_by_status(Request $request)
     {
         $status = $request->all()['status'];
-        $orders = Order::status($status)->get();
-        return $this->sendResponse(OrderResource::collection($orders), 'Orders retrieved successfully.');
+        $orders = Order::with(['customer', 'order_details'])->status($status)->get();
+        return $this->sendResponse(OrderResource2::collection($orders), 'Orders retrieved successfully.');
     }
 
     public function add_product_to_order(Request $request, $order_id)
@@ -70,10 +71,10 @@ class OrderController extends Controller
         $input['order_id'] = $order_id;
         $orderDetail = OrderDetail::create($input);
 
-        return $this->sendResponse(new OrderDetailResource($orderDetail), 'Product added successfully.');
+        return $this->sendResponse($orderDetail, 'Product added successfully.');
     }
 
-    
+
     public function add_offer_to_order(Request $request, $order_id)
     {
         $input = $request->all();
@@ -95,7 +96,7 @@ class OrderController extends Controller
             $valuesOrderDetail = ["offer_id" => $newOffer->id, "unit_price" => $newOffer->price, "quantity" => 1, "order_id" => $order_id];
             $orderDetail = OrderDetail::create($valuesOrderDetail);
             DB::commit();
-            return $this->sendResponse(new OrderDetailResource($orderDetail), 'Product added successfully.');
+            return $this->sendResponse(new OrderDetailResource($orderDetail->load(['articleSize', 'articleSize.article', 'Offer'])), 'Product added successfully.');
         } catch (\Exception  $e) {
             DB::rollback();
             return $this->sendError('Something went wrong.', $e, 422);

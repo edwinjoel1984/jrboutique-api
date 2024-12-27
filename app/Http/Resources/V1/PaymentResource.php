@@ -17,14 +17,14 @@ class PaymentResource extends JsonResource
         return [
             'id' => $this->id,
             'customer_id' => $this->customer_id,
-            'customer_name' => $this->getCustomerName(),
+            'customer_name' => $this->getCustomerName($this->whenLoaded('customer')),
             'amount' => $this->amount,
             'date' => $this->date
         ];
     }
 
-    private function getCustomerName()
+    private function getCustomerName($customer)
     {
-        return $this->customer->first_name . ' ' . $this->customer->last_name;
+        return $customer->first_name . ' ' . $customer->last_name;
     }
 }

@@ -14,7 +14,7 @@ class PaymentController extends Controller
      */
     public function index()
     {
-        $payments = Payment::orderByDesc('date')->get();
+        $payments = Payment::with('customer')->orderByDesc('date')->get();
         return $this->sendResponse(PaymentResource::collection($payments), 'Payments retrieved successfully.');
     }
 
