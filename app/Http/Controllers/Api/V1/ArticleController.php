@@ -22,7 +22,7 @@ class ArticleController extends Controller
      */
     public function index()
     {
-        $articles = Article::with(['brand', 'stock'])->withSum('stock as stock_quantity', 'quantity')->orderBy('name')->get();
+        $articles = Article::with(['brand', 'stock', 'stock.size'])->withSum('stock as stock_quantity', 'quantity')->orderBy('name')->get();
         return  ArticleResource::collection($articles);
 
         // return ArticleResource::collection(Article::latest()->paginate());
@@ -62,7 +62,7 @@ class ArticleController extends Controller
                 $newArticleSize->transaction()->save(new Transaction(["order_id" => null,  "quantity" => $newArticleSize["quantity"], "type" => "ENTRADA DE INVENTARIO", "memo" => "Stock Inicial"]));
             }
             DB::commit();
-            $article = Article::with(['brand', 'stock'])
+            $article = Article::with(['brand', 'stock', 'stock.size'])
                 ->withSum('stock as stock_quantity', 'quantity')
                 ->find($article->id);
             return $this->sendResponse(new ArticleResource($article), 'Article created successfully.');
@@ -77,7 +77,7 @@ class ArticleController extends Controller
      */
     public function show(Article $article)
     {
-        $article = Article::with(['brand', 'stock'])
+        $article = Article::with(['brand', 'stock', 'stock.size'])
             ->withSum('stock as stock_quantity', 'quantity')
             ->find($article->id);
         return new ArticleResource($article);
@@ -187,7 +187,7 @@ class ArticleController extends Controller
             $articleSize->transaction()->save($transaction);
 
             DB::commit();
-            $articles = Article::with(['brand', 'stock'])->withSum('stock as stock_quantity', 'quantity')->orderBy('name')->get();
+            $articles = Article::with(['brand', 'stock', 'stock.size'])->withSum('stock as stock_quantity', 'quantity')->orderBy('name')->get();
             return  ArticleResource::collection($articles);
         } catch (\Error $error) {
             DB::rollBack();
