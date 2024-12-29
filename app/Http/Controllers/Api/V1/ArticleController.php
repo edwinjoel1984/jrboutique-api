@@ -21,7 +21,7 @@ class ArticleController extends Controller
      */
     public function index()
     {
-        $articles = Article::orderBy('name')->get();
+        $articles = Article::with(['brand', 'stock'])->withSum('stock as stock_quantity', 'quantity')->orderBy('name')->get();
         return new ArticleCollectionResource($articles);
 
         // return ArticleResource::collection(Article::latest()->paginate());
@@ -53,6 +53,9 @@ class ArticleController extends Controller
                 $newArticleSize->transaction()->save(new Transaction(["order_id" => null,  "quantity" => $newArticleSize["quantity"], "type" => "ENTRADA DE INVENTARIO", "memo" => "Stock Inicial"]));
             }
             DB::commit();
+            $article = Article::with(['brand', 'stock'])
+                ->withSum('stock as stock_quantity', 'quantity')
+                ->find($article->id);
             return $this->sendResponse(new ArticleResource($article), 'Article created successfully.');
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -65,6 +68,9 @@ class ArticleController extends Controller
      */
     public function show(Article $article)
     {
+        $article = Article::with(['brand', 'stock'])
+            ->withSum('stock as stock_quantity', 'quantity')
+            ->find($article->id);
         return new ArticleResource($article);
     }
 
@@ -172,11 +178,11 @@ class ArticleController extends Controller
             $articleSize->transaction()->save($transaction);
 
             DB::commit();
-            $articles = Article::all();
+            $articles = Article::with(['brand', 'stock'])->withSum('stock as stock_quantity', 'quantity')->orderBy('name')->get();
             return new ArticleCollectionResource($articles);
-        } catch (\Throwable $th) {
+        } catch (\Error $error) {
             DB::rollBack();
-            return $this->sendError('Something went wrong.', $th, 422);
+            return $this->sendError('Something went wrong.', $error, 422);
         }
     }
 }
