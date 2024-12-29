@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\V1\ArticleCollectionResource;
 use App\Models\Article;
 use App\Models\ArticleSize;
 use Validator;
@@ -11,6 +10,8 @@ use Illuminate\Http\Request;
 
 use App\Http\Resources\V1\ArticleResource;
 use App\Http\Resources\V1\ArticleSizeResource2;
+use App\Models\Brand;
+use App\Models\GroupSize;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\DB;
 
@@ -22,9 +23,17 @@ class ArticleController extends Controller
     public function index()
     {
         $articles = Article::with(['brand', 'stock'])->withSum('stock as stock_quantity', 'quantity')->orderBy('name')->get();
-        return new ArticleCollectionResource($articles);
+        return  ArticleResource::collection($articles);
 
         // return ArticleResource::collection(Article::latest()->paginate());
+    }
+
+    public function article_data()
+    {
+        return [
+            'brands' => Brand::orderBy('name')->get(),
+            'group_sizes' => GroupSize::all()
+        ];
     }
 
     /**
@@ -179,7 +188,7 @@ class ArticleController extends Controller
 
             DB::commit();
             $articles = Article::with(['brand', 'stock'])->withSum('stock as stock_quantity', 'quantity')->orderBy('name')->get();
-            return new ArticleCollectionResource($articles);
+            return  ArticleResource::collection($articles);
         } catch (\Error $error) {
             DB::rollBack();
             return $this->sendError('Something went wrong.', $error, 422);

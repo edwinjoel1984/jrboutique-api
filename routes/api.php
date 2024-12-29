@@ -40,6 +40,7 @@ Route::middleware('auth:sanctum')->group(function () {
       Route::apiResource('v1/brands', BrandV1::class);
 
       Route::apiResource('v1/articles', ArticleV1::class);
+      Route::get('v1/article-data', [ArticleV1::class, 'article_data']);
 
       Route::get('v1/find_article_by_name', [ArticleV1::class, 'find_by_name']);
       Route::get('v1/find_article_by_code', [ArticleV1::class, 'find_by_code']);
@@ -70,6 +71,7 @@ Route::middleware('auth:sanctum')->group(function () {
       Route::get('v1/commitments_grouped_by_user', [CommitmentV1::class, 'commitments_grouped_by_user']);
 
       Route::get('v1/dashboard_data', [CommitmentV1::class, 'dashboard_data']);
+      Route::get('v1/products_without_stock', [ArticleV1::class, 'products_without_stock']);
 
       Route::get('v1/commitments_by_date', [CommitmentV1::class, 'commitments_by_date']);
 
