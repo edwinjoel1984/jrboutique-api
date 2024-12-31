@@ -16,7 +16,7 @@ class BrandController extends Controller
      */
     public function index()
     {
-        $brands = Brand::all();
+        $brands = Brand::withCount('articles')->get();
         return $this->sendResponse(BrandResource::collection($brands), 'Brands retrieved successfully.');
         //   return BrandResource::collection(Brand::latest()->paginate());
     }
