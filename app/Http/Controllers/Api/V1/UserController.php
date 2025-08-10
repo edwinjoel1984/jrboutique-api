@@ -69,7 +69,7 @@ class UserController extends Controller
             ]);
 
             $user = $request->user();
-            return response()->json($user);
+
             $user->update([
                 'printer_tunnel_url' => $request->printer_tunnel_url
             ]);
