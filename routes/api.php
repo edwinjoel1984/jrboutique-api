@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\V1\OrderController as OrderV1;
 use App\Http\Controllers\Api\V1\CommitmentController as CommitmentV1;
 use App\Http\Controllers\Api\V1\PaymentController as PaymentV1;
 use App\Http\Controllers\Api\V1\GroupSizeController as GroupSizeV1;
+use App\Http\Controllers\Api\V1\UserController as UserV1;
 use App\Http\Controllers\Api\LoginController as LoginController;
 // use App\Models\User as UserV1;
 // use Illuminate\Support\Facades\Hash;
@@ -88,6 +89,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
       Route::apiResource('v1/group_sizes', GroupSizeV1::class)
             ->only(['show']);
+
+      // User routes
+      Route::put('v1/users/{id}/printer-tunnel-url', [UserV1::class, 'updatePrinterTunnelUrl']);
+      Route::put('v1/user/printer-tunnel-url', [UserV1::class, 'updateMyPrinterTunnelUrl']);
 });
 
 Route::post('sessions', [LoginController::class, 'login']);

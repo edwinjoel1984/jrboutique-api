@@ -22,6 +22,7 @@ class LoginController extends Controller
                 'email' => $user->email,
                 'name' => $user->name,
                 'role' => $user->role_id,
+                'printer_tunnel_url' => $user->printer_tunnel_url,
                 'message' => 'Success'
             ]);
         }
