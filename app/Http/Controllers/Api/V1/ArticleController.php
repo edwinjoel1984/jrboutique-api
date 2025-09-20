@@ -172,7 +172,7 @@ class ArticleController extends Controller
                     "type" => "ENTRADA DE INVENTARIO",
                     "memo" => "Adición Manual de Producto"
                 ]);
-            } else {
+            } else if ($request->action === "REMOVE") {
                 $newQuantity = $articleSize['quantity'] - $request->quantity;
                 $transaction = new Transaction([
                     "order_id" => null,
@@ -181,10 +181,16 @@ class ArticleController extends Controller
                     "memo" => "Disminución manual de producto por error"
                 ]);
             }
-            // dd($newQuantity);
-            $articleSize['quantity'] = $newQuantity;
+
+            if ($request->action === "UPDATE_PRICE") {
+                $articleSize['sale_price'] = $request->price;
+            } else {
+                $articleSize['quantity'] = $newQuantity;
+            }
             $articleSize->save();
-            $articleSize->transaction()->save($transaction);
+            if (isset($transaction)) {
+                $articleSize->transaction()->save($transaction);
+            }
 
             DB::commit();
             $articles = Article::with(['brand', 'stock', 'stock.size'])->withSum('stock as stock_quantity', 'quantity')->orderBy('name')->get();
