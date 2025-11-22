@@ -91,16 +91,32 @@ class ArticleController extends Controller
         $input = $request->all();
 
         $validator = Validator::make($input, [
-            'name' => 'required'
+            'name' => 'required',
+            'brand_id' => 'required',
+            'size_details' => 'nullable|array',
         ]);
 
         if ($validator->fails()) {
             return $this->sendError('Validation Error.', $validator->errors());
         }
 
+        DB::beginTransaction();
+
         $article->name = $input['name'];
         $article->brand_id = $input['brand_id'];
         $article->save();
+
+        foreach ($input["size_details"] as $articleSize) {
+            $articleSize["uniquecode"] = $this->generateBarcodeNumber();
+            $articleSize["article_id"] = $article["id"];
+            $newArticleSize =  ArticleSize::create($articleSize);
+            $newArticleSize->transaction()->save(new Transaction(["order_id" => null,  "quantity" => $newArticleSize["quantity"], "type" => "ENTRADA DE INVENTARIO", "memo" => "Stock Inicial"]));
+        }
+
+        //load relations : brand and stock 
+        $article->load('brand', 'stock', 'stock.size');
+
+        DB::commit();
 
         return $this->sendResponse(new ArticleResource($article), 'Article updated successfully.');
     }

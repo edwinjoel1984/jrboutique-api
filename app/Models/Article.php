@@ -19,6 +19,6 @@ class Article extends Model
 
     public function stock(): HasMany
     {
-        return $this->hasMany(ArticleSize::class);
+        return $this->hasMany(ArticleSize::class)->orderBy('size_id');
     }
 }

@@ -21,6 +21,7 @@ class ArticleSizeResource extends JsonResource
             'sale_price' => $this->sale_price,
             'quantity' => $this->quantity,
             'size' => $this->whenLoaded('size')?->name,
+            'size_id' => $this->whenLoaded('size')?->id,
             'uniquecode' => $this->uniquecode,
         ];
     }

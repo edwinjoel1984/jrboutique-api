@@ -20,6 +20,7 @@ class ArticleResource extends JsonResource
             'ref' => $this->ref,
             'code' => $this->barcode,
             'brand' => $this->whenLoaded('brand')?->name,
+            'brand_id' => $this->whenLoaded('brand')?->id,
             'stock' => $this->stock_quantity,
             'detail_stock' => ArticleSizeResource::collection($this->whenLoaded('stock')),
         ];
