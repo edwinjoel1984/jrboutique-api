@@ -24,4 +24,9 @@ class Customer extends Model
     {
         return $this->hasMany(Commitment::class);
     }
+
+    public function getTotalPendingAmountAttribute()
+    {
+        return $this->commitments()->sum('pending_amount');
+    }
 }

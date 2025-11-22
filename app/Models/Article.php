@@ -21,4 +21,9 @@ class Article extends Model
     {
         return $this->hasMany(ArticleSize::class)->orderBy('size_id');
     }
+
+    public function commitments_total_amount(): Attribute
+    {
+        return $this->commitments()->sum('pending_amount');
+    }
 }
