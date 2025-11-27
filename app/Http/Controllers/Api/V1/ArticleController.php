@@ -107,10 +107,28 @@ class ArticleController extends Controller
         $article->save();
 
         foreach ($input["size_details"] as $articleSize) {
-            $articleSize["uniquecode"] = $this->generateBarcodeNumber();
-            $articleSize["article_id"] = $article["id"];
-            $newArticleSize =  ArticleSize::create($articleSize);
-            $newArticleSize->transaction()->save(new Transaction(["order_id" => null,  "quantity" => $newArticleSize["quantity"], "type" => "ENTRADA DE INVENTARIO", "memo" => "Stock Inicial"]));
+            //if id is present must update fields and generate transactions
+            if (isset($articleSize["id"])) {
+                $articleSizeDB = ArticleSize::find($articleSize["id"]);
+                $type = "ENTRADA DE INVENTARIO";
+                $memo =  "Adicion de Producto a Inventario";
+                if ($articleSize["quantity_diff"] < 0) {
+                    $type = "SALIDA DE INVENTARIO";
+                    $memo =  "Remocion de Producto de Inventario";
+                }
+                $articleSizeDB->quantity += $articleSize["quantity_diff"];
+
+                if (isset($articleSize['new_price']) && $articleSize['new_price'] !== null) {
+                    $articleSizeDB->sale_price = $articleSize['new_price'];
+                }
+                $articleSizeDB->save();
+                $articleSizeDB->transaction()->save(new Transaction(["order_id" => null,  "quantity" => $articleSize["quantity"], "type" => $type, "memo" => $memo]));
+            } else {
+                $articleSize["uniquecode"] = $this->generateBarcodeNumber();
+                $articleSize["article_id"] = $article["id"];
+                $newArticleSize =  ArticleSize::create($articleSize);
+                $newArticleSize->transaction()->save(new Transaction(["order_id" => null,  "quantity" => $newArticleSize["quantity"], "type" => "ENTRADA DE INVENTARIO", "memo" => "Stock Inicial"]));
+            }
         }
 
         //load relations : brand and stock 

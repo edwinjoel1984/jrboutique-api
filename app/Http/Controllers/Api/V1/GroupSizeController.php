@@ -19,6 +19,11 @@ class GroupSizeController extends Controller
         return (new GroupSizeResource($groupSize));
     }
 
+    public function index()
+    {
+        return GroupSizeResource::collection(GroupSize::all());
+    }
+
     public function generate_qrcode()
     {
         // dd(Str::orderedUuid()->toString());

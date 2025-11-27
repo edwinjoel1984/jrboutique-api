@@ -126,7 +126,18 @@ class CommitmentController extends Controller
     public function dashboard_data()
     {
         $total_pending_amount = Commitment::sum('pending_amount');
-        $response = ["all_pending_amount" => $total_pending_amount];
+        // add commitments current month and year
+        $current_month_commitments = Commitment::whereMonth('date', '=', date('m'))->whereYear('date', '=', date('Y'))->sum('total_amount');
+        // add payments current month and year
+        $current_month_payments = PaymentCommitment::whereMonth('date', '=', date('m'))->whereYear('date', '=', date('Y'))->sum('amount');
+        //add sales this week
+        $current_week_sales = Commitment::whereBetween('date', [now()->startOfWeek(), now()->endOfWeek()])->sum('total_amount');
+        $response = [
+            "all_pending_amount" => $total_pending_amount,
+            "current_month_commitments" => $current_month_commitments,
+            "current_month_payments" => $current_month_payments,
+            "current_week_sales" => $current_week_sales
+        ];
         return $this->sendResponse($response, "Dashboard data retrieved successfully.");
     }
     public function commitments_by_date(Request $request)
