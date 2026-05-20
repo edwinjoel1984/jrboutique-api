@@ -6,10 +6,42 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
+    public function vendors()
+    {
+        $vendors = User::where('role_id', 2)->orderBy('name')->get(['id', 'name', 'email', 'role_id']);
+        return response()->json(['body' => $vendors]);
+    }
+
+    public function store(Request $request): JsonResponse
+    {
+        try {
+            $data = $request->validate([
+                'name'     => 'required|string|max:255',
+                'email'    => 'required|string|max:255|unique:users,email',
+                'password' => 'required|string|min:6',
+                'role_id'  => 'required|integer',
+            ]);
+
+            $user = User::create([
+                'name'     => $data['name'],
+                'email'    => $data['email'],
+                'password' => Hash::make($data['password']),
+                'role_id'  => $data['role_id'],
+            ]);
+
+            return response()->json(['body' => $user], 201);
+        } catch (ValidationException $e) {
+            return response()->json(['body' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['body' => $e->getMessage()], 500);
+        }
+    }
+
     /**
      * Update the printer tunnel URL for a user.
      *
