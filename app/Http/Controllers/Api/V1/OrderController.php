@@ -18,15 +18,21 @@ use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Order::all();
+        $user = $request->user();
+        $query = Order::query();
+
+        if ($user && $user->role_id == 2) {
+            $query->where('seller_id', $user->id);
+        }
+
+        $orders = $query->get();
         return $this->sendResponse(OrderResource::collection($orders), 'Orders retrieved successfully.');
     }
 
     public function store(Request $request)
     {
-        //
         $input = $request->all();
         $validator = Validator::make($input, [
             'order_date' => 'required',
@@ -37,8 +43,12 @@ class OrderController extends Controller
             return $this->sendError('Validation Error.', $validator->errors());
         }
 
-        $order = Order::create($input);
+        $user = $request->user();
+        if ($user && $user->role_id == 2) {
+            $input['seller_id'] = $user->id;
+        }
 
+        $order = Order::create($input);
 
         return $this->sendResponse(new OrderResource($order), 'Order created successfully.');
     }
@@ -52,7 +62,14 @@ class OrderController extends Controller
     public function orders_by_status(Request $request)
     {
         $status = $request->all()['status'];
-        $orders = Order::with(['customer', 'order_details'])->status($status)->get();
+        $user = $request->user();
+        $query = Order::with(['customer', 'order_details'])->status($status);
+
+        if ($user && $user->role_id == 2) {
+            $query->where('seller_id', $user->id);
+        }
+
+        $orders = $query->get();
         return $this->sendResponse(OrderResource2::collection($orders), 'Orders retrieved successfully.');
     }
 
@@ -145,14 +162,16 @@ class OrderController extends Controller
             $order['total'] = $input['order_total'];
             $order->save();
 
-            //Update Inventory 
-            $items = OrderDetail::where('order_id', $order_id)->whereNotNull('article_size_id')->get();
-            foreach ($items as $item) {
-                $articleSize = ArticleSize::find($item['article_size_id']);
-                $articleSize['quantity'] = $articleSize['quantity'] - $item['quantity'];
-                $transactionData = ["article_size_id" => $item['article_size_id'], "order_id" => $order_id,  "type" => "Venta", "quantity" => $item['quantity'], "memo" => "Venta Order #" . $order_id];
-                $articleSize->save();
-                Transaction::create($transactionData);
+            // Vendor orders: inventory was already deducted at assignment time — skip deduction
+            if (!$order['seller_id']) {
+                $items = OrderDetail::where('order_id', $order_id)->whereNotNull('article_size_id')->get();
+                foreach ($items as $item) {
+                    $articleSize = ArticleSize::find($item['article_size_id']);
+                    $articleSize['quantity'] = $articleSize['quantity'] - $item['quantity'];
+                    $transactionData = ["article_size_id" => $item['article_size_id'], "order_id" => $order_id, "type" => "Venta", "quantity" => $item['quantity'], "memo" => "Venta Order #" . $order_id];
+                    $articleSize->save();
+                    Transaction::create($transactionData);
+                }
             }
 
 

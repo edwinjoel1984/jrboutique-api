@@ -12,18 +12,19 @@ class LoginController extends Controller
 {
     public function login(Request $request)
     {
-
         $this->validateLogin($request);
         if (Auth::attempt($request->only('email', 'password'))) {
             $user = $request->user();
-            $token =  $user->createToken($request->email)->plainTextToken;
+            $token = $user->createToken($request->email)->plainTextToken;
             return response()->json([
-                'token' => $token,
-                'email' => $user->email,
-                'name' => $user->name,
-                'role' => $user->role_id,
-                'printer_tunnel_url' => $user->printer_tunnel_url,
-                'message' => 'Success'
+                'body' => [
+                    'token'             => $token,
+                    'user_id'           => $user->id,
+                    'role_id'           => $user->role_id,
+                    'name'              => $user->name,
+                    'email'             => $user->email,
+                    'printer_tunnel_url' => $user->printer_tunnel_url,
+                ]
             ]);
         }
 
@@ -35,8 +36,8 @@ class LoginController extends Controller
     public function validateLogin(Request $request)
     {
         return $request->validate([
-            'email' => 'required|email',
-            'password' => 'required'
+            'email'    => 'required|string',
+            'password' => 'required',
         ]);
     }
 

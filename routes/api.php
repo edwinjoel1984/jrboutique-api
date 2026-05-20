@@ -12,6 +12,12 @@ use App\Http\Controllers\Api\V1\CommitmentController as CommitmentV1;
 use App\Http\Controllers\Api\V1\PaymentController as PaymentV1;
 use App\Http\Controllers\Api\V1\GroupSizeController as GroupSizeV1;
 use App\Http\Controllers\Api\V1\UserController as UserV1;
+use App\Http\Controllers\Api\V1\VendorPeriodController as VendorPeriodV1;
+use App\Http\Controllers\Api\V1\VendorInventoryController as VendorInventoryV1;
+use App\Http\Controllers\Api\V1\VendorCustomerController as VendorCustomerV1;
+use App\Http\Controllers\Api\V1\VendorPaymentController as VendorPaymentV1;
+use App\Http\Controllers\Api\V1\VendorAssignmentController as VendorAssignmentV1;
+use App\Http\Controllers\Api\V1\VendorCustomerPaymentController as VendorCustomerPaymentV1;
 use App\Http\Controllers\Api\LoginController as LoginController;
 // use App\Models\User as UserV1;
 // use Illuminate\Support\Facades\Hash;
@@ -88,11 +94,45 @@ Route::middleware('auth:sanctum')->group(function () {
             ->only(['index', 'show', 'store']);
 
       Route::apiResource('v1/group_sizes', GroupSizeV1::class)
-            ->only(['show']);
+            ->only(['show', 'index']);
 
       // User routes
+      Route::get('v1/users/vendors', [UserV1::class, 'vendors']);
+      Route::post('v1/users', [UserV1::class, 'store']);
       Route::put('v1/users/{id}/printer-tunnel-url', [UserV1::class, 'updatePrinterTunnelUrl']);
       Route::put('v1/user/printer-tunnel-url', [UserV1::class, 'updateMyPrinterTunnelUrl']);
+
+      // Vendor Period routes
+      Route::get('v1/vendor-periods', [VendorPeriodV1::class, 'index']);
+      Route::get('v1/vendor-periods/{id}', [VendorPeriodV1::class, 'show']);
+      Route::post('v1/vendor-periods', [VendorPeriodV1::class, 'store']);
+      Route::put('v1/vendor-periods/{id}/close', [VendorPeriodV1::class, 'close']);
+
+      // Vendor Inventory routes
+      Route::get('v1/vendor-inventory/period/{period_id}', [VendorInventoryV1::class, 'byPeriod']);
+      Route::post('v1/vendor-inventory/assign', [VendorInventoryV1::class, 'assign']);
+      Route::post('v1/vendor-inventory/return', [VendorInventoryV1::class, 'returnProducts']);
+
+      // Vendor Customer routes
+      Route::get('v1/vendor-customers/vendor/{vendor_id}/with-balance', [VendorCustomerV1::class, 'withBalance']);
+      Route::get('v1/vendor-customers/vendor/{vendor_id}', [VendorCustomerV1::class, 'byVendor']);
+      Route::get('v1/vendor-customers/eligible/{vendor_id}', [VendorCustomerV1::class, 'eligible']);
+      Route::post('v1/vendor-customers', [VendorCustomerV1::class, 'store']);
+      Route::delete('v1/vendor-customers/{id}', [VendorCustomerV1::class, 'destroy']);
+
+      // Vendor Payment routes (vendor → admin)
+      Route::get('v1/vendor-payments/period/{period_id}', [VendorPaymentV1::class, 'byPeriod']);
+      Route::get('v1/vendor-payments/period/{period_id}/balance', [VendorPaymentV1::class, 'balance']);
+      Route::post('v1/vendor-payments', [VendorPaymentV1::class, 'store']);
+
+      // Vendor Assignment routes (vendor assigns garments to customers)
+      Route::get('v1/vendor-assignments/period/{period_id}', [VendorAssignmentV1::class, 'byPeriod']);
+      Route::post('v1/vendor-assignments', [VendorAssignmentV1::class, 'store']);
+      Route::delete('v1/vendor-assignments/{id}', [VendorAssignmentV1::class, 'destroy']);
+
+      // Vendor Customer Payment routes (customer pays vendor)
+      Route::get('v1/vendor-customer-payments/period/{period_id}', [VendorCustomerPaymentV1::class, 'byPeriod']);
+      Route::post('v1/vendor-customer-payments', [VendorCustomerPaymentV1::class, 'store']);
 });
 
 Route::post('sessions', [LoginController::class, 'login']);
