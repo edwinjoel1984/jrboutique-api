@@ -123,7 +123,7 @@ class VendorAssignmentController extends Controller
                     'period_id'          => $data['period_id'],
                     'vendor_inventory_id' => $inv->id,
                     'quantity'           => $item['quantity'],
-                    'unit_price'         => $inv->articleSize->sale_price,
+                    'unit_price'         => $inv->articleSize?->sale_price ?? $inv->custom_price,
                 ]);
             }
 
